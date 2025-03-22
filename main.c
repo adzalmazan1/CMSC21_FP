@@ -28,6 +28,7 @@ struct jogger_info {
 
 // global struct array
 struct jogger_info jogger[MAX_MEMBERS];
+int curr_jogger; // global
 
 // screens in order
 void splash_screen();
@@ -83,10 +84,10 @@ int main() {
 void splash_screen() {
     system("clear");
     
-    display_ascii("ascii_art/jog_squad.txt", 500);
+    // display_ascii("ascii_art/jog_squad.txt", 500);
     // display_ascii("ascii_art/subhead_js.txt", 500);
     
-    usleep(2000000); // 2 seconds
+    // usleep(2000000); // 2 seconds
 }
 
 // status: done
@@ -197,6 +198,7 @@ void log_in() {
     
     char log_opt[MAX_STRLN];
     int opt = interface_opt(log_opt, log_upper);
+    curr_jogger = opt - 1;
 
     if(opt == -1){
         home_screen();
@@ -205,7 +207,20 @@ void log_in() {
         jog_squad_members();
     }
     else{
-        access_jogger(jogger, opt - 1); // this is where most of the magic happens
+        
+        csvrow_read_signup("csv/sign_up.csv", jogger); // password purposes
+        char password[MAX_STRLN];
+        do {
+            printf("Enter your password: ");
+            str_noNL(password, sizeof(password));
+
+            if (strcmp(password, jogger[opt-1].password) != 0) {
+                printf("Incorrect password. Try again.\n");
+            }
+
+        } while (strcmp(password, jogger[opt-1].password) != 0);
+
+        access_jogger(jogger, curr_jogger); // this is where most of the magic happens
     }
 }
 
@@ -345,6 +360,7 @@ void sign_up() {
     // after all the signing up, data is stored in excel with this func
     store_signup("csv/sign_up.csv", jogger);
 
+    // after signing up
     system("clear");
     usleep(2000000);
 
@@ -393,6 +409,7 @@ int disp_joggerUN(const char *csv_file) {
 
     if(ptr == NULL) {
         perror("Error opening file");
+        return -1;
     }
 
     char row[MAX_ROWLN];
@@ -424,9 +441,10 @@ int csvrow_read_signup(const char *csv_file, struct jogger_info j[MAX_MEMBERS]) 
     int index = 0;
     if (ptr == NULL) {
         perror("Error opening file");
+        return -1;
     }
 
-    fgets(row, MAX_ROWLN, ptr);
+    fgets(row, MAX_ROWLN, ptr); // header?
     while (fgets(row, MAX_ROWLN, ptr) != NULL) {
         sscanf(row, "%100[^,],%100[^,],%100[^,],%d,%lf,%lf,%lf",
                j[index].name, j[index].password, j[index].gender,
@@ -446,6 +464,7 @@ void store_signup(const char *csv_file, struct jogger_info j) {
 
     if(ptr == NULL) {
         perror("Error opening file"); // the file you are trying to open does not exist
+        return;
     }
 
     fprintf(ptr, "%s,%s,%s,%d,%.2lf,%.2lf,%.2lf\n", j.name, j.password, j.gender, j.age, j.height, j.weight, j.pace); // print in the csv file
@@ -467,6 +486,7 @@ void csvrow_read_jogentry(const char *csv_file, struct jogger_info j[MAX_MEMBERS
     int index = 0;
     if (ptr == NULL) {
         perror("Error opening file");
+        return;
     }
 
     fgets(row, MAX_ROWLN, ptr);
@@ -484,6 +504,7 @@ void clear_csv(const char *csv_file) {
     FILE *ptr = fopen(csv_file, "w");
     if (ptr == NULL) {
         perror("Error opening file");
+        return;
     }
     fclose(ptr);
 }
@@ -495,6 +516,7 @@ void store_jogentry(const char *csv_file, struct jogger_info j[MAX_MEMBERS]) {
     FILE *ptr = fopen(csv_file, "w");
     if (ptr == NULL) {
         perror("Error opening file");
+        return;
     }
 
     fprintf(ptr, "Entry #,Total Distance,Total Duration,Total Calories\n"); // Write header
@@ -508,20 +530,8 @@ void store_jogentry(const char *csv_file, struct jogger_info j[MAX_MEMBERS]) {
 // --- --- //
 
 void access_jogger(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
-    csvrow_read_signup("csv/sign_up.csv", j); // password purposes
-
-    char password[MAX_STRLN];
-    do {
-        printf("Enter your password: ");
-        str_noNL(password, sizeof(password));
-
-        if (strcmp(password, j[jogger_index].password) != 0) {
-            printf("Incorrect password. Try again.\n");
-        }
-
-    } while (strcmp(password, j[jogger_index].password) != 0);
-
     system("clear");
+    display_ascii("ascii_art/1_helloJogger.txt", 0);
 
     printf(
     "\nEnter # to proceed"
@@ -634,10 +644,24 @@ void view_profile(struct jogger_info j) {
 
 	printf("\n\n\t\t\t\t\t\tRECOMMENDED MEAL PLAN: ");
 	recommendations(TDEE);
+
+    printf("\nPress b/B to return. Press h/H to go back to Home Page.\n\n"); 
     
-    usleep(15000000); // 2 seconds
-    system("clear");
-    log_in();
+    char profile_opt[MAX_STRLN];
+    int opt = interface_opt(profile_opt, -1);
+
+    switch(opt) {
+        case -2:
+            access_jogger(jogger, curr_jogger);
+            break;
+
+        case -1:
+            home_screen();
+            break;
+
+        default:
+            break;
+    }
 }
 
 int recommendations(double tdee){
@@ -657,6 +681,7 @@ int recommendations(double tdee){
     
     if (file == NULL) {
         perror("Error opening file");
+        return -1;
     }
 
     int col = 0;
@@ -906,6 +931,7 @@ void overwriterow_signup(struct jogger_info j[MAX_MEMBERS], const char *csv_file
     ptr = fopen(csv_file, "r+");
     if (ptr == NULL) {
         perror("Error opening file");
+        return;
     }
 
     // Read through the file to find the target row position
@@ -988,6 +1014,7 @@ void delete_row(const char *csv_file, int jogger_index) {
 
   if (csv_fp == NULL || temp_fp == NULL) {
     perror("Error opening file");
+    return;
   }
 
   int keep_reading = 1;
@@ -1219,4 +1246,3 @@ printf("+-----------------+-----------------+-----------------+-----------------
     system("clear");
     hall_of_achievements();
 }
-
