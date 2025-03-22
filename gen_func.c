@@ -9,6 +9,7 @@ void display_ascii(const char *txt_file, int delay) { // const to ensure no modi
 
     if(ptr == NULL) {
         perror("Error opening file"); // perror tells what type of error exists...
+        return;
     }
 
     char c;
@@ -34,7 +35,6 @@ void strupr(char *string) {
         *i = toupper(*i);
     }
 }
-// ---
 
 // accepting yes/no only for yes or no questions
 int validans_yesorno(char *answer) {
