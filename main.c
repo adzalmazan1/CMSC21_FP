@@ -360,9 +360,11 @@ void sign_up() {
     // after all the signing up, data is stored in excel with this func
     store_signup("csv/sign_up.csv", jogger);
 
+    printf("\nNew jog squad member alert!\n");
+
     // after signing up
-    system("clear");
-    usleep(2000000);
+    usleep(3000000);
+	system("clear");
 
     // returned to page where login and sigup options are presented
     jog_squad_members();
@@ -537,10 +539,11 @@ void access_jogger(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
     "\nEnter # to proceed"
     "\n\n1. View jogger profile"
     "\n2. Log a jogging entry"
-    "\n3. Update jogger age, height, and weight\n\n");
+    "\n3. Update jogger age, height, and weight"
+    "\n4. Return\n\n");
 
     char jogger_opt[MAX_STRLN];
-    int opt = interface_opt(jogger_opt, 3);
+    int opt = interface_opt(jogger_opt, 4);
 
     switch (opt)
     {
@@ -552,6 +555,8 @@ void access_jogger(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
         break;
     case 3:
         update_info(j, jogger_index);
+    case 4:
+        jog_squad_members();
     default:
         break;
     }
@@ -561,8 +566,9 @@ void update_info(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
     system("clear");
     
     csvrow_read_signup("csv/sign_up.csv", j); // check size from sign up data
-        
-    printf("To successfully update info, enter following data asked :)\n\n");
+    
+    display_ascii("ascii_art/1_updateinfo.txt", 0);
+    printf("\nTo successfully update info, enter following data asked :)\n\n");
 
     int age2;
     double height2 = 0, weight2 = 0;
@@ -621,15 +627,20 @@ void update_info(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
 		
         overwriterow_signup(j, "csv/sign_up.csv", jogger_index);
 
+        printf("Successfully updated jogger info!\n");
+
 		usleep(3000000);
 		system("clear");
+        access_jogger(jogger, curr_jogger);
 }
 
 void view_profile(struct jogger_info j) {
     system("clear");
 
+    display_ascii("ascii_art/1_joggerprofile.txt", 0);
+
     printf("%-15s\t %s\n%-15s\t %s\n%-15s\t %d\n%-15s\t %.2lf cm\n%-15s\t %.2lf kg\n%-15s\t %.2lf min/mi\n", 
-    "Name: ", j.name, "Gender: ", j.gender, "Age: ",  j.age, "Height: ", j.height, "Weight: ",  j.weight, "Best Pace: ", j.pace);
+    "\nName: ", j.name, "Gender: ", j.gender, "Age: ",  j.age, "Height: ", j.height, "Weight: ",  j.weight, "Best Pace: ", j.pace);
     
     double BMR;
     if (strcmp(j.gender, "MALE") == 0) {
@@ -713,10 +724,12 @@ int recommendations(double tdee){
 void log_jogging(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
     system("clear");
 
+    display_ascii("ascii_art/1_logentry.txt", 0);
+
     csvrow_read_signup("csv/sign_up.csv", j); 
     csvrow_read_jogentry("csv/jog_entry.csv", j);
 
-    printf("Enter data for this session\n\n");
+    printf("\nEnter data for this session\n\n");
 
     double miles = 0.0, minutes = 0.0;
     int nca_miles, i_miles;
@@ -757,6 +770,8 @@ void log_jogging(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
     double jogger_cal = round((7 * 3.5 * j[jogger_index].weight / 200) * minutes);
     j[jogger_index].calories +=  jogger_cal;
 
+    printf("Successfully logged jogging entry!\n");
+
 struct calories_burned {
 	double calories;
 	char food[MAX_STRLN];
@@ -783,8 +798,7 @@ struct calories_burned {
         {-1, " ", " "}
     };
 
-// minor formatting issue
-    printf("\n");
+    // minor formatting issue
     for(int i = 0; cal[i].calories != -1; i++) {
         if (jogger_cal == cal[i].calories) {
             printf("You burned calories equivalent to %s of %s :O\n", cal[i].serving, cal[i].food);
@@ -804,9 +818,9 @@ struct calories_burned {
     clear_csv("csv/jog_entry.csv");
     store_jogentry("csv/jog_entry.csv", j);
 
-    usleep(5000000); // 2 seconds
+    usleep(3000000); 
     system("clear");
-    log_in();
+    access_jogger(jogger, curr_jogger);
 }
 
 void indiv_stats() {
