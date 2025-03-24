@@ -84,10 +84,8 @@ int main() {
 void splash_screen() {
     system("clear");
     
-    // display_ascii("ascii_art/jog_squad.txt", 500);
-    // display_ascii("ascii_art/subhead_js.txt", 500);
-    
-    // usleep(2000000); // 2 seconds
+    display_ascii("ascii_art/jog_squad.txt", 500);
+    usleep(2000000); // 2 seconds
 }
 
 // status: done
@@ -120,7 +118,7 @@ void home_screen() {
         break;
 
     case 4:
-        printf("Exiting Jog Squad...\n");
+        printf("Exiting Jog Squad...\n\n");
         usleep(2000000);
         system("clear");
         return;
@@ -164,7 +162,7 @@ void jog_squad_members() {
     else if(limit_checker == MAX_MEMBERS) {
         char answer2[MAX_STRLN];
         do {
-            printf("Sign-up limit reached. Enter yes to delete a user. Otherwise, no: ");
+            printf("Sign-up limit reached.\nEnter 'yes' to delete a user. Otherwise, 'no': ");
             str_noNL(answer2, sizeof(answer2));
             strlwr(answer2);
             if(!validans_yesorno(answer2)) {
@@ -173,15 +171,10 @@ void jog_squad_members() {
         } while(!validans_yesorno(answer2));
         
         if(validans_yesorno(answer2) == 1) {
-            delete("csv/sign_up.csv"); // study this func
-            printf("Slots to sign-up have freed. Proceed to sign-up.\n");
-            system("clear");
-            usleep(2000000);
+            delete("csv/sign_up.csv"); 
             jog_squad_members();
         }
         else {
-            system("clear");
-            usleep(2000000);
             jog_squad_members();
         }
     }
@@ -193,7 +186,7 @@ void log_in() {
 
     display_ascii("ascii_art/1_login.txt", 0);
 
-    printf("\nEnter # to proceed. Press b/B to Log-in or Sign-up. Press h/H to go back to Home Page.\n\n");
+    printf("\nEnter # to proceed. Press b/B to return. Press h/H to go back to Home Page.\n\n");
     int log_upper = disp_joggerUN("csv/sign_up.csv") - 1;
     
     char log_opt[MAX_STRLN];
@@ -360,10 +353,10 @@ void sign_up() {
     // after all the signing up, data is stored in excel with this func
     store_signup("csv/sign_up.csv", jogger);
 
-    printf("\nNew jog squad member alert!\n");
+    printf("\nNew jog squad member alert!\n\n");
 
     // after signing up
-    usleep(3000000);
+    usleep(6000000); 
 	system("clear");
 
     // returned to page where login and sigup options are presented
@@ -540,7 +533,7 @@ void access_jogger(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
     "\n\n1. View jogger profile"
     "\n2. Log a jogging entry"
     "\n3. Update jogger age, height, and weight"
-    "\n4. Return\n\n");
+    "\n4. Log-out\n\n");
 
     char jogger_opt[MAX_STRLN];
     int opt = interface_opt(jogger_opt, 4);
@@ -556,7 +549,10 @@ void access_jogger(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
     case 3:
         update_info(j, jogger_index);
     case 4:
-        jog_squad_members();
+        printf("Logging out...\n\n");
+        usleep(2000000);
+        system("clear");
+        home_screen();
     default:
         break;
     }
@@ -627,7 +623,7 @@ void update_info(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
 		
         overwriterow_signup(j, "csv/sign_up.csv", jogger_index);
 
-        printf("Successfully updated jogger info!\n");
+        printf("\nSuccessfully updated jogger info!\n\n");
 
 		usleep(3000000);
 		system("clear");
@@ -770,7 +766,7 @@ void log_jogging(struct jogger_info j[MAX_MEMBERS], int jogger_index) {
     double jogger_cal = round((7 * 3.5 * j[jogger_index].weight / 200) * minutes);
     j[jogger_index].calories +=  jogger_cal;
 
-    printf("Successfully logged jogging entry!\n");
+    printf("\nSuccessfully logged jogging entry!\n");
 
 struct calories_burned {
 	double calories;
@@ -801,7 +797,7 @@ struct calories_burned {
     // minor formatting issue
     for(int i = 0; cal[i].calories != -1; i++) {
         if (jogger_cal == cal[i].calories) {
-            printf("You burned calories equivalent to %s of %s :O\n", cal[i].serving, cal[i].food);
+            printf("\nYou burned calories equivalent to %s of %s :O\n", cal[i].serving, cal[i].food);
         }
     }
 
@@ -810,22 +806,27 @@ struct calories_burned {
     // over writing in sign up info the best pace CELL SPECIFIC
     if(session_pace > j[jogger_index].pace) {
         j[jogger_index].pace = session_pace;
-        printf("You have a new all-time best pace of %.2lf min/mi :O\n", session_pace);
+        printf("\nYou have a new all-time best pace of %.2lf min/mi :O\n", session_pace);
     }
+
+    printf("\n");
 
     // TABLE CODE HERE
     overwriterow_signup(j, "csv/sign_up.csv", jogger_index);
     clear_csv("csv/jog_entry.csv");
     store_jogentry("csv/jog_entry.csv", j);
 
-    usleep(3000000); 
+    usleep(6000000); 
     system("clear");
     access_jogger(jogger, curr_jogger);
 }
 
 void indiv_stats() {
     system("clear");
-    printf("\nEnter # whose individual statistics you want to see\n\n");
+
+    display_ascii("ascii_art/2_indivstats.txt", 0);
+
+    printf("\nEnter # whose individual statistics you want to see.\n\n");
     
     int indiv_upper = disp_joggerUN("csv/sign_up.csv") - 1;
     
@@ -837,30 +838,46 @@ void indiv_stats() {
     csvrow_read_signup("csv/sign_up.csv", jogger); // array storing
     csvrow_read_jogentry("csv/jog_entry.csv", jogger); // array storing
 
+    // there is a "clear" here
     system("clear");
     display_ascii("ascii_art/2_stats.txt", 0);
 
-        printf("\t\t%s's S T A T S\n\n", jogger[jogger_index].name);
-        printf("\t%-20s\t %d\n", "Total Entries: ", jogger[jogger_index].entry);
-        printf("\t%-20s\t %.2lf\n", "Total Distance (mi): ", jogger[jogger_index].distance);
+    printf("\t\t%s's S T A T S\n\n", jogger[jogger_index].name);
+    printf("\t%-20s\t %d\n", "Total Entries: ", jogger[jogger_index].entry);
+    printf("\t%-20s\t %.2lf\n", "Total Distance (mi): ", jogger[jogger_index].distance);
 
-        printf("\t%-20s\t %.2lf\n", "Total Duration (min): ", jogger[jogger_index].duration);
-        printf("\t%-20s\t %.0lf\n", "Total Calories burned: ", jogger[jogger_index].calories);
-        printf("\t%-20s\t %.2lf min/mi", "Current Best Pace: ", jogger[jogger_index].pace);
-        printf("\n\n");
-        usleep(3000000); // 2 seconds
-        system("clear");
-        view_stats();
+    printf("\t%-20s\t %.2lf\n", "Total Duration (min): ", jogger[jogger_index].duration);
+    printf("\t%-20s\t %.0lf\n", "Total Calories burned: ", jogger[jogger_index].calories);
+    printf("\t%-20s\t %.2lf min/mi", "Current Best Pace: ", jogger[jogger_index].pace);
+    printf("\n\n");
+    
+    printf("\nPress b/B to return. Press h/H to go back to Home Page.\n\n"); 
+
+    int inside_opt = interface_opt(indiv_opt, -1);
+
+    switch(inside_opt) {
+        case -1:
+            home_screen();
+            break;
+        case -2:
+            view_stats();
+
+        default:
+            break;
+    }
 }
 
 void team_stats(const char *csv_signup, const char *csv_jogentry) {	
     system("clear");
+
+    display_ascii("ascii_art/2_teamstats.txt", 0);
 
     FILE *signup_file = fopen(csv_signup, "r");
     FILE *jogentry_file = fopen(csv_jogentry, "r");
     
     if (jogentry_file == NULL || signup_file == NULL) {
         perror("Error opening file/s");
+        return;
     }
 
     char name_line[MAX_ROWLN];
@@ -870,6 +887,7 @@ void team_stats(const char *csv_signup, const char *csv_jogentry) {
     fgets(line, MAX_ROWLN, jogentry_file);
     fgets(name_line, MAX_ROWLN, signup_file);
 
+    printf("\n");
     printf("-----------------------------------------------------------------------\n");
     printf("%-10s\t%-10s\t%-10s\t%-10s\n", "Name", "Total Distance", "Total Time", "Total Calories Burned");
     printf("-----------------------------------------------------------------------\n");
@@ -892,11 +910,25 @@ void team_stats(const char *csv_signup, const char *csv_jogentry) {
 
     printf("-----------------------------------------------------------------------\n");
 
+    printf("\nPress b/B to return. Press h/H to go back to Home Page.\n\n"); 
+
     fclose(jogentry_file);
     fclose(signup_file);
-    usleep(3000000); // 2 seconds
-    system("clear");
-    view_stats();
+
+    char team_opt[MAX_STRLN];
+    int opt = interface_opt(team_opt, -1);
+
+    switch(opt) {
+        case -1:
+            home_screen();
+            break;
+        case -2:
+            view_stats();
+            break;
+        default:
+            break;
+    }
+
 }
 
 void view_stats() {
@@ -1059,28 +1091,34 @@ void delete_row(const char *csv_file, int jogger_index) {
 }
 
 void delete (const char *csv_file) {
-  system("clear");
-  printf("Enter # to proceed with user deletion.\n\n");
-  int upper = disp_joggerUN("csv/sign_up.csv") - 1; // array size in a way
-  
-  char delete_opt[MAX_STRLN];
-  int nca_opt, i_opt;
+    system("clear");
 
-  do {
+    display_ascii("ascii_art/1_delete.txt", 0);
+
+    printf("\nEnter # to proceed with user deletion.\n\n");
+    int upper = disp_joggerUN("csv/sign_up.csv") - 1; // array size in a way
+
+    char delete_opt[MAX_STRLN];
+    int nca_opt, i_opt;
+
+    do {
     printf("Enter choice: ");
     str_noNL(delete_opt, sizeof(delete_opt));
-    
+
     nca_opt = !nochar_ans(delete_opt);
     i_opt = atoi(delete_opt);
-    
+
     if(nca_opt || i_opt < 1 || i_opt > upper) {
         printf("Invalid choice.\n");
     }
 
-  } while(nca_opt || i_opt < 1 || i_opt > upper);
-    
+    } while(nca_opt || i_opt < 1 || i_opt > upper);
+
     delete_row("csv/sign_up.csv", i_opt + 1);
     delete_row("csv/jog_entry.csv", i_opt + 1);
+
+    printf("\nSlots to sign-up have freed. Proceed to sign-up.\n\n");
+    usleep(3000000);
 }
 
 
