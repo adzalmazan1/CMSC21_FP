@@ -1124,12 +1124,13 @@ void delete (const char *csv_file) {
 
 void hall_of_achievements() {
     system("clear");
+
     display_ascii("ascii_art/3_js.txt", 0);
+
     struct jogger_info j[MAX_MEMBERS];
-    printf("%s", j[2].name);
+
     csvrow_read_signup("csv/sign_up.csv", j);
     csvrow_read_jogentry("csv/jog_entry.csv", j);
-    // display_ascii("ascii_art/hall_of_achievements.txt", 0);
 
     printf(
         "\nEnter # to proceed. Press b/B to Log-in or Sign-up. Press h/H to go back to Home Page."
@@ -1168,6 +1169,8 @@ void hall_of_achievements() {
 void distance_achieved(struct jogger_info j[MAX_MEMBERS]) {
     system("clear");
 
+    display_ascii("ascii_art/3_distancehall.txt", 0);
+
     struct distance_achieved {
         double goal;
         char achievement[MAX_STRLN];
@@ -1180,7 +1183,7 @@ void distance_achieved(struct jogger_info j[MAX_MEMBERS]) {
         {13.1, "Half-Marathoner"},
         {-1, " "}};
 
-    printf("+-----------------+-----------------+-----------------+-----------------+\n");
+    printf("\n+-----------------+-----------------+-----------------+-----------------+\n");
     
     for (int i = 0; achievements[i].goal != -1; i++) {
         printf("| %-15s ", achievements[i].achievement);
@@ -1203,14 +1206,31 @@ void distance_achieved(struct jogger_info j[MAX_MEMBERS]) {
     }
     printf("+-----------------+-----------------+-----------------+-----------------+\n");
     
-    usleep(3000000);
-    system("clear");
-    hall_of_achievements();
+    printf("\nPress b/B to return. Press h/H to go back to Home Page.\n\n"); 
+    
+    char disthall_opt[MAX_STRLN];
+    int opt = interface_opt(disthall_opt, -1);
+
+    switch(opt) {
+        case -2:
+            hall_of_achievements();
+            break;
+
+        case -1:
+            home_screen();
+            break;
+
+        default:
+            break;
+    }
+    
 }
 
 
 void duration_achieved(struct jogger_info j[MAX_MEMBERS]){
-	system("clear");	
+	system("clear");
+
+    display_ascii("ascii_art/3_consistencyhall.txt", 0);	
 
     struct duration_achieved{
         int sessions;
@@ -1225,7 +1245,7 @@ void duration_achieved(struct jogger_info j[MAX_MEMBERS]){
         {-1, " ",}
     };
 
-printf("+-----------------+-----------------+-----------------+-----------------+\n");
+printf("\n+-----------------+-----------------+-----------------+-----------------+\n");
     
     for (int i = 0; achievements[i].sessions != -1; i++) {
         printf("| %-15s ", achievements[i].achievement);
@@ -1249,13 +1269,29 @@ printf("+-----------------+-----------------+-----------------+-----------------
 
 printf("+-----------------+-----------------+-----------------+-----------------+\n");
 
-    usleep(3000000);
-    system("clear");
-    hall_of_achievements();
+    printf("\nPress b/B to return. Press h/H to go back to Home Page.\n\n"); 
+    
+    char consthall_opt[MAX_STRLN];
+    int opt = interface_opt(consthall_opt, -1);
+
+    switch(opt) {
+        case -2:
+            hall_of_achievements();
+            break;
+
+        case -1:
+            home_screen();
+            break;
+
+        default:
+            break;
+    }
 }
     
 void calories_achieved(struct jogger_info j[MAX_MEMBERS]){
 	system("clear");
+
+    display_ascii("ascii_art/3_calburnedhall.txt", 0);
 
     struct calories_achieved{
         int burned;
@@ -1270,7 +1306,7 @@ void calories_achieved(struct jogger_info j[MAX_MEMBERS]){
         {-1, " ",}
     };
 
-printf("+-----------------+-----------------+-----------------+-----------------+\n");
+printf("\n+-----------------+-----------------+-----------------+-----------------+\n");
 
     for (int i = 0; achievements[i].burned != -1; i++) {
         printf("| %-15s ", achievements[i].achievement);
@@ -1294,7 +1330,22 @@ printf("+-----------------+-----------------+-----------------+-----------------
 
 printf("+-----------------+-----------------+-----------------+-----------------+\n");
 
-    usleep(3000000);
-    system("clear");
-    hall_of_achievements();
+    printf("\nPress b/B to return. Press h/H to go back to Home Page.\n\n"); 
+    
+    char calburnedhall_opt[MAX_STRLN];
+    int opt = interface_opt(calburnedhall_opt, -1);
+
+    switch(opt) {
+        case -2:
+            hall_of_achievements();
+            break;
+
+        case -1:
+            home_screen();
+            break;
+
+        default:
+            break;
+    }
+    
 }
